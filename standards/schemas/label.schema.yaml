@@ -1,0 +1,263 @@
+# BlackBox Label Schema
+# JSON Schema for validating product labels
+# Version: 1.0.0
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "urn:blackbox:schema:label:1.0"
+title: "BlackBox Product Label Schema"
+description: "Schema for validating data product labels"
+type: object
+
+required:
+  - identification_area
+  - file_area
+  - provenance
+
+properties:
+  identification_area:
+    type: object
+    required:
+      - lid
+      - version
+      - title
+      - product_class
+    properties:
+      lid:
+        type: string
+        pattern: "^urn:blackbox:[a-z0-9:-]+::[0-9]+\\.[0-9]+$"
+        description: "Logical Identifier with version"
+      version:
+        type: string
+        pattern: "^[0-9]+\\.[0-9]+$"
+        description: "Product version"
+      title:
+        type: string
+        minLength: 3
+        maxLength: 256
+        description: "Human-readable title"
+      product_class:
+        type: string
+        enum:
+          - Mission
+          - Assessment
+          - Finding
+          - Evidence
+          - Target
+          - Scope
+          - ToolExecution
+          - Report
+          - Context
+        description: "Product class from data dictionary"
+      alternate_ids:
+        type: array
+        items:
+          type: string
+        description: "Alternative identifiers"
+
+  observation_area:
+    type: object
+    properties:
+      mission_lid:
+        type: string
+        description: "Parent mission reference"
+      assessment_lid:
+        type: string
+        description: "Parent assessment reference"
+      target_lid:
+        type: string
+        description: "Target reference"
+      start_time:
+        type: string
+        format: date-time
+        description: "Observation start"
+      end_time:
+        type: string
+        format: date-time
+        description: "Observation end"
+      processing_level:
+        type: string
+        enum: ["L0", "L1", "L2", "L3", "L4"]
+        description: "Data processing level"
+
+  context_area:
+    type: object
+    properties:
+      tools:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            version:
+              type: string
+            parameters:
+              type: string
+        description: "Tools used to create product"
+      environment:
+        type: object
+        properties:
+          platform:
+            type: string
+          network:
+            type: string
+            enum: ["internal", "external", "tor", "vpn"]
+          operator:
+            type: string
+        description: "Execution environment"
+
+  file_area:
+    type: object
+    required:
+      - file
+    properties:
+      file:
+        type: object
+        required:
+          - name
+          - checksum
+        properties:
+          name:
+            type: string
+            description: "File name"
+          size:
+            type: integer
+            minimum: 0
+            description: "File size in bytes"
+          checksum:
+            type: object
+            required:
+              - type
+              - value
+            properties:
+              type:
+                type: string
+                enum: ["SHA-256", "SHA-512", "MD5"]
+              value:
+                type: string
+            description: "File integrity checksum"
+          format:
+            type: string
+            description: "File format (XML, JSON, PNG, etc.)"
+          encoding:
+            type: string
+            default: "UTF-8"
+            description: "Text encoding"
+
+  reference_list:
+    type: object
+    properties:
+      internal_references:
+        type: array
+        items:
+          type: object
+          required:
+            - lid
+            - type
+          properties:
+            lid:
+              type: string
+            type:
+              type: string
+              enum: ["parent", "child", "related", "derived", "supersedes"]
+            description:
+              type: string
+        description: "References to other BlackBox products"
+      external_references:
+        type: array
+        items:
+          type: object
+          required:
+            - type
+            - reference
+          properties:
+            type:
+              type: string
+              enum: ["cwe", "cve", "url", "document", "standard"]
+            reference:
+              type: string
+            description:
+              type: string
+        description: "References to external resources"
+
+  discipline_area:
+    type: object
+    description: "Domain-specific metadata extensions"
+    properties:
+      security:
+        type: object
+        properties:
+          severity:
+            type: string
+            enum: ["critical", "high", "medium", "low", "info"]
+          cvss_score:
+            type: number
+            minimum: 0
+            maximum: 10
+          cvss_vector:
+            type: string
+          attack_vector:
+            type: string
+          impact:
+            type: string
+      network:
+        type: object
+        properties:
+          protocol:
+            type: string
+          port:
+            type: integer
+          service:
+            type: string
+      web:
+        type: object
+        properties:
+          url:
+            type: string
+            format: uri
+          method:
+            type: string
+            enum: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+          status_code:
+            type: integer
+
+  provenance:
+    type: object
+    required:
+      - created_by
+      - created_at
+    properties:
+      created_by:
+        type: string
+        description: "Creator identifier"
+      created_at:
+        type: string
+        format: date-time
+        description: "Creation timestamp"
+      modified_at:
+        type: string
+        format: date-time
+        description: "Last modification timestamp"
+      audit_trail:
+        type: array
+        items:
+          type: object
+          required:
+            - action
+            - timestamp
+          properties:
+            action:
+              type: string
+              enum: ["created", "modified", "validated", "promoted", "archived"]
+            timestamp:
+              type: string
+              format: date-time
+            actor:
+              type: string
+            details:
+              type: string
+        description: "Complete change history"
+
+additionalProperties: false

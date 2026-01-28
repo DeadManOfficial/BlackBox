@@ -1,0 +1,62 @@
+# BlackBox - Docker Ignore
+# =========================
+
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Secrets - NEVER include
+.env
+.env.*
+*.pem
+*.key
+secrets/
+credentials/
+
+# Data directories - mount as volumes instead
+targets/
+output/
+reports/
+data/
+logs/
+
+# Large files
+*.tar
+*.tar.gz
+*.zip
+*.7z
+
+# Documentation (not needed in container)
+*.md
+!README.md
+
+# Old/backup files
+*.bak
+*.old
+*.orig
+*~

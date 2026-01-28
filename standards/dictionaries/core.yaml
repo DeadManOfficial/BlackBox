@@ -1,0 +1,509 @@
+# BlackBox Core Data Dictionary
+# Inspired by NASA PDS4 Common Data Dictionary
+# Version: 1.0.0
+
+namespace: "urn:blackbox:dict:core"
+version: "1.0.0"
+description: "Core class and attribute definitions for BlackBox data products"
+
+# =============================================================================
+# ENUMERATIONS
+# =============================================================================
+
+enumerations:
+  mission_type:
+    description: "Type of security mission"
+    values:
+      - pentest: "Penetration testing engagement"
+      - bugbounty: "Bug bounty program participation"
+      - audit: "Security audit or compliance review"
+      - research: "Security research project"
+      - redteam: "Red team exercise"
+      - assessment: "Vulnerability assessment"
+
+  assessment_type:
+    description: "Type of assessment activity"
+    values:
+      - recon: "Reconnaissance and information gathering"
+      - scanning: "Automated vulnerability scanning"
+      - enumeration: "Service and user enumeration"
+      - exploitation: "Vulnerability exploitation"
+      - post_exploitation: "Post-exploitation activities"
+      - reporting: "Report generation"
+      - verification: "Finding verification"
+
+  severity:
+    description: "Finding severity level"
+    values:
+      - critical: "CVSS 9.0-10.0 - Immediate action required"
+      - high: "CVSS 7.0-8.9 - Urgent remediation needed"
+      - medium: "CVSS 4.0-6.9 - Should be addressed"
+      - low: "CVSS 0.1-3.9 - Minor issue"
+      - info: "CVSS 0.0 - Informational only"
+
+  processing_level:
+    description: "Data processing stage (NASA-inspired)"
+    values:
+      - L0: "Raw - Unprocessed tool output"
+      - L1: "Validated - Verified and deduplicated"
+      - L2: "Enriched - Correlated with context"
+      - L3: "Analyzed - Expert-reviewed"
+      - L4: "Actionable - Remediation-ready"
+
+  target_type:
+    description: "Type of assessment target"
+    values:
+      - web: "Web application"
+      - api: "API endpoint"
+      - mobile: "Mobile application"
+      - network: "Network infrastructure"
+      - cloud: "Cloud environment"
+      - iot: "IoT device"
+      - desktop: "Desktop application"
+      - firmware: "Firmware/embedded system"
+
+  finding_status:
+    description: "Current status of a finding"
+    values:
+      - new: "Newly discovered"
+      - confirmed: "Verified as valid"
+      - false_positive: "Determined to be invalid"
+      - duplicate: "Duplicate of another finding"
+      - remediated: "Fixed by target owner"
+      - accepted_risk: "Risk accepted by owner"
+      - wontfix: "Will not be fixed"
+
+  evidence_type:
+    description: "Type of supporting evidence"
+    values:
+      - screenshot: "Visual capture"
+      - log: "Log file or output"
+      - request: "HTTP/network request"
+      - response: "HTTP/network response"
+      - code: "Source code snippet"
+      - config: "Configuration file"
+      - packet_capture: "Network packet capture"
+      - video: "Screen recording"
+
+  mission_status:
+    description: "Current mission state"
+    values:
+      - planning: "Initial planning phase"
+      - scoping: "Scope definition"
+      - active: "Active testing"
+      - paused: "Temporarily paused"
+      - analysis: "Analyzing results"
+      - reporting: "Generating reports"
+      - completed: "Mission complete"
+      - cancelled: "Mission cancelled"
+
+# =============================================================================
+# CORE CLASSES
+# =============================================================================
+
+classes:
+  Mission:
+    description: "Top-level container for security assessment work"
+    attributes:
+      lid:
+        type: string
+        required: true
+        pattern: "^urn:blackbox:mission:[a-z0-9-]+::[0-9]+\\.[0-9]+$"
+        description: "Logical identifier"
+
+      name:
+        type: string
+        required: true
+        min_length: 3
+        max_length: 256
+        description: "Human-readable mission name"
+
+      type:
+        type: enum
+        required: true
+        enum_ref: mission_type
+        description: "Type of mission"
+
+      status:
+        type: enum
+        required: true
+        enum_ref: mission_status
+        description: "Current status"
+
+      target:
+        type: reference
+        required: true
+        class_ref: Target
+        description: "Primary assessment target"
+
+      scope:
+        type: reference
+        required: true
+        class_ref: Scope
+        description: "Authorized scope definition"
+
+      start_time:
+        type: datetime
+        required: true
+        description: "Mission start timestamp"
+
+      end_time:
+        type: datetime
+        required: false
+        description: "Mission completion timestamp"
+
+      assessments:
+        type: array
+        item_type: reference
+        class_ref: Assessment
+        description: "Child assessments"
+
+  Assessment:
+    description: "Collection of related security testing activities"
+    attributes:
+      lid:
+        type: string
+        required: true
+        description: "Logical identifier"
+
+      mission_lid:
+        type: string
+        required: true
+        description: "Parent mission reference"
+
+      name:
+        type: string
+        required: true
+        description: "Assessment name"
+
+      type:
+        type: enum
+        required: true
+        enum_ref: assessment_type
+        description: "Assessment type"
+
+      processing_level:
+        type: enum
+        required: true
+        enum_ref: processing_level
+        description: "Current processing level"
+
+      tools:
+        type: array
+        item_type: reference
+        class_ref: ToolExecution
+        description: "Tools used in assessment"
+
+      findings:
+        type: array
+        item_type: reference
+        class_ref: Finding
+        description: "Discovered findings"
+
+      start_time:
+        type: datetime
+        required: true
+        description: "Assessment start"
+
+      end_time:
+        type: datetime
+        required: false
+        description: "Assessment completion"
+
+  Finding:
+    description: "Discovered security issue or observation"
+    attributes:
+      lid:
+        type: string
+        required: true
+        description: "Logical identifier"
+
+      assessment_lid:
+        type: string
+        required: true
+        description: "Parent assessment"
+
+      title:
+        type: string
+        required: true
+        max_length: 256
+        description: "Brief finding title"
+
+      description:
+        type: text
+        required: true
+        description: "Detailed description"
+
+      severity:
+        type: enum
+        required: true
+        enum_ref: severity
+        description: "Severity level"
+
+      cvss_score:
+        type: float
+        required: false
+        min: 0.0
+        max: 10.0
+        description: "CVSS 3.1 score"
+
+      cvss_vector:
+        type: string
+        required: false
+        pattern: "^CVSS:3\\.[01]/.+$"
+        description: "CVSS vector string"
+
+      cwe_id:
+        type: string
+        required: false
+        pattern: "^CWE-[0-9]+$"
+        description: "CWE identifier"
+
+      status:
+        type: enum
+        required: true
+        enum_ref: finding_status
+        description: "Finding status"
+
+      evidence:
+        type: array
+        item_type: reference
+        class_ref: Evidence
+        required: true
+        min_items: 1
+        description: "Supporting evidence"
+
+      reproduction_steps:
+        type: array
+        item_type: string
+        description: "Steps to reproduce"
+
+      remediation:
+        type: text
+        description: "Recommended fix"
+
+      discovered_at:
+        type: datetime
+        required: true
+        description: "Discovery timestamp"
+
+  Evidence:
+    description: "Proof supporting a finding"
+    attributes:
+      lid:
+        type: string
+        required: true
+        description: "Logical identifier"
+
+      finding_lid:
+        type: string
+        required: true
+        description: "Parent finding"
+
+      type:
+        type: enum
+        required: true
+        enum_ref: evidence_type
+        description: "Evidence type"
+
+      title:
+        type: string
+        required: true
+        description: "Evidence title"
+
+      description:
+        type: text
+        description: "Evidence description"
+
+      file_path:
+        type: string
+        required: true
+        description: "Path to evidence file"
+
+      checksum:
+        type: string
+        required: true
+        pattern: "^sha256:[a-f0-9]{64}$"
+        description: "SHA-256 hash for integrity"
+
+      captured_at:
+        type: datetime
+        required: true
+        description: "Capture timestamp"
+
+      captured_by:
+        type: string
+        required: true
+        description: "Tool or operator that captured"
+
+  Target:
+    description: "Subject of security assessment"
+    attributes:
+      lid:
+        type: string
+        required: true
+        description: "Logical identifier"
+
+      name:
+        type: string
+        required: true
+        description: "Target name"
+
+      type:
+        type: enum
+        required: true
+        enum_ref: target_type
+        description: "Target type"
+
+      identifiers:
+        type: array
+        item_type: object
+        required: true
+        min_items: 1
+        description: "Target identifiers (URLs, IPs, etc.)"
+
+      technologies:
+        type: array
+        item_type: string
+        description: "Detected technologies"
+
+      metadata:
+        type: object
+        description: "Additional target metadata"
+
+  Scope:
+    description: "Authorized assessment boundaries"
+    attributes:
+      lid:
+        type: string
+        required: true
+        description: "Logical identifier"
+
+      in_scope:
+        type: array
+        item_type: string
+        required: true
+        description: "Explicitly authorized targets"
+
+      out_of_scope:
+        type: array
+        item_type: string
+        description: "Explicitly excluded targets"
+
+      rules_of_engagement:
+        type: array
+        item_type: string
+        description: "Testing constraints"
+
+      authorization_ref:
+        type: string
+        description: "Reference to authorization document"
+
+      valid_from:
+        type: datetime
+        required: true
+        description: "Scope validity start"
+
+      valid_until:
+        type: datetime
+        required: true
+        description: "Scope validity end"
+
+  ToolExecution:
+    description: "Record of tool execution"
+    attributes:
+      lid:
+        type: string
+        required: true
+        description: "Logical identifier"
+
+      tool_name:
+        type: string
+        required: true
+        description: "Tool name"
+
+      tool_version:
+        type: string
+        description: "Tool version"
+
+      command:
+        type: string
+        description: "Command executed"
+
+      parameters:
+        type: object
+        description: "Execution parameters"
+
+      start_time:
+        type: datetime
+        required: true
+        description: "Execution start"
+
+      end_time:
+        type: datetime
+        description: "Execution end"
+
+      exit_code:
+        type: integer
+        description: "Exit code"
+
+      output_file:
+        type: string
+        description: "Path to output file"
+
+# =============================================================================
+# METADATA CLASSES
+# =============================================================================
+
+  Label:
+    description: "Product label metadata structure"
+    attributes:
+      identification_area:
+        type: object
+        required: true
+        description: "Product identification"
+
+      observation_area:
+        type: object
+        description: "Observation context"
+
+      context_area:
+        type: object
+        description: "Execution context"
+
+      file_area:
+        type: object
+        required: true
+        description: "File information"
+
+      reference_list:
+        type: object
+        description: "Related products"
+
+      provenance:
+        type: object
+        required: true
+        description: "Creation and modification history"
+
+  Provenance:
+    description: "Audit trail for data products"
+    attributes:
+      created_by:
+        type: string
+        required: true
+        description: "Creator identifier"
+
+      created_at:
+        type: datetime
+        required: true
+        description: "Creation timestamp"
+
+      modified_at:
+        type: datetime
+        required: true
+        description: "Last modification"
+
+      audit_trail:
+        type: array
+        item_type: object
+        description: "Change history"

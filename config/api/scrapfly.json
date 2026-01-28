@@ -1,0 +1,25 @@
+{
+  "provider": "scrapfly",
+  "description": "Anti-bot bypass API with 130M+ residential proxies",
+  "api_key": "scp-live-63ded12af9694852be7329129242707a",
+  "base_url": "https://api.scrapfly.io",
+  "features": [
+    "Cloudflare bypass",
+    "Imperva bypass",
+    "DataDome bypass",
+    "PerimeterX bypass",
+    "Kasada bypass",
+    "Akamai bypass",
+    "JS rendering",
+    "Proxy rotation",
+    "Residential proxies",
+    "Country targeting"
+  ],
+  "endpoints": {
+    "scrape": "/scrape",
+    "screenshot": "/screenshot",
+    "extraction": "/extraction"
+  },
+  "pricing": "Pay-as-you-go",
+  "documentation": "https://scrapfly.io/docs"
+}

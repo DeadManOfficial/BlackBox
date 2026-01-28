@@ -1,0 +1,355 @@
+# BlackBox AI - Authorized Testing Scope
+# ========================================
+# AUTHORIZATION STATUS: CONFIRMED
+# This scope document serves as the authorization record for testing.
+# Location: blackbox-ai/config/authorized_scope.yaml
+
+program:
+  name: "Video Platform Bug Bounty"
+  type: "bug_bounty"
+  status: "active"
+  scope_type: "open"  # open = full application in scope with focus areas
+
+authorization:
+  status: "confirmed"
+  document_location: "blackbox-ai/config/authorized_scope.yaml"
+  required: true
+  confirmation_prompt: true
+  log_acceptance: true
+
+scope_definition:
+  type: "open"
+  description: |
+    OPEN SCOPE - Full application is in scope for testing.
+    The targets below represent FOCUS AREAS with higher reward potential.
+    Other vulnerabilities found within the application are also eligible.
+
+    AUTHORIZATION: This document serves as written authorization for testing.
+    All testing within this scope is pre-approved.
+
+# ============================================================================
+# FOCUS AREAS - Primary Targets (Higher Reward Tiers)
+# ============================================================================
+
+targets:
+  # ---------------------------------------------------------------------------
+  # TIER 5: Business Impact ($75k-$500k+) - Highest Priority
+  # ---------------------------------------------------------------------------
+
+  - asset: "AI Analysis Pipeline (ASR/NLP)"
+    system_area: "AI Services"
+    phase: "Phase 6 - Advanced Exploitation"
+    tier: "Tier 5: Business Impact ($75k-$500k+)"
+    directive: "Model & Scoring Logic Mapping"
+    action: |
+      Map transcription, segmentation, virality scoring, and prompt/data
+      flow between services. Identify model manipulation vectors.
+    tooling:
+      - "ASR service"
+      - "NLP/LLM layer"
+      - "scoring API"
+      - "transcript endpoints"
+    potential_impact:
+      - "Privilege escalation"
+      - "Data leakage"
+      - "Systemic scoring abuse"
+      - "Model poisoning"
+    multipliers:
+      - "2x Regulatory Impact"
+      - "1.5x Scale >100k users"
+    status: "Open"
+    priority: "Critical"
+    notes: "Capture transcript formats and scoring inputs. Focus on prompt injection vectors."
+
+  - asset: "Identity & Authorization"
+    system_area: "AuthN/AuthZ"
+    phase: "Phase 6 - Advanced Exploitation"
+    tier: "Tier 5: Business Impact ($75k-$500k+)"
+    directive: "Privilege Escalation Paths"
+    action: |
+      Map roles, permissions, shadow admins, and service accounts.
+      Identify indirect privilege grant mechanisms and RBAC bypasses.
+    tooling:
+      - "Auth APIs"
+      - "Role/permission endpoints"
+      - "JWT/session handling"
+      - "OAuth flows"
+    potential_impact:
+      - "Full admin takeover"
+      - "Cross-tenant access"
+      - "Service account abuse"
+    multipliers:
+      - "3x Root/Admin Access"
+    status: "Open"
+    priority: "Critical"
+    notes: "Focus on indirect privilege grants, token manipulation, and session handling."
+
+  # ---------------------------------------------------------------------------
+  # TIER 4: Architectural Attacks ($25k-$500k)
+  # ---------------------------------------------------------------------------
+
+  - asset: "Ingestion API & Upload Flow"
+    system_area: "Media Ingestion"
+    phase: "Phase 3 - Vulnerability Assessment"
+    tier: "Tier 4: Architectural Attacks ($25k-$500k)"
+    directive: "Upload & Validation Mapping"
+    action: |
+      Document full upload flow, client-side checks vs server-side enforcement,
+      signed URL behavior, bucket naming, and job creation.
+    tooling:
+      - "POST /videos/uploads"
+      - "Signed URLs"
+      - "Object storage"
+      - "CDN"
+      - "Upload widget"
+    potential_impact:
+      - "Bypass validation"
+      - "Unauthorized uploads"
+      - "RCE via media pipeline"
+      - "Storage abuse"
+    multipliers:
+      - "3x System Compromise"
+      - "2x Complete E2E Map"
+    status: "Open"
+    priority: "High"
+    notes: "Focus on trust boundary between client and transcoder. Test content-type mismatches."
+
+  - asset: "Transcoding & Normalization Engine"
+    system_area: "Video Processing"
+    phase: "Phase 6 - Advanced Exploitation"
+    tier: "Tier 4: Architectural Attacks ($25k-$500k)"
+    directive: "Transcoder Attack Surface"
+    action: |
+      Reverse engineer transcoding jobs, container parsing, playlist handling,
+      and temp file usage. Identify injection points in media processing.
+    tooling:
+      - "FFmpeg-style engine"
+      - "Worker queues"
+      - "HLS playlists"
+      - "M3U8 handling"
+      - "Subtitle processing"
+    potential_impact:
+      - "SSRF"
+      - "RCE"
+      - "Metadata exposure"
+      - "Lateral movement"
+    multipliers:
+      - "3x System Compromise"
+      - "1.5x Novel Finding"
+    status: "Open"
+    priority: "High"
+    notes: "Inspect playlists, subtitle/image handling. Test malformed media containers."
+
+  - asset: "Final Render & Export"
+    system_area: "Media Output"
+    phase: "Phase 5 - Forensic Analysis"
+    tier: "Tier 4: Architectural Attacks ($25k-$500k)"
+    directive: "Render Pipeline Mapping"
+    action: |
+      Trace render jobs, temp storage, final asset URLs, expiry and access control.
+      Identify predictable URL patterns and authorization gaps.
+    tooling:
+      - "POST /clips/{id}/render"
+      - "Signed URLs"
+      - "Asset delivery CDN"
+      - "Temp storage"
+    potential_impact:
+      - "Unauthorized access to rendered assets"
+      - "Cross-tenant data access"
+      - "URL prediction attacks"
+    multipliers:
+      - "2x Complete E2E Map"
+    status: "Open"
+    priority: "High"
+    notes: "Check URL predictability and TTLs. Test authorization on direct asset access."
+
+  - asset: "Job Queue & Workers"
+    system_area: "Infrastructure"
+    phase: "Phase 5 - Forensic Analysis"
+    tier: "Tier 4: Architectural Attacks ($25k-$500k)"
+    directive: "Async Job Control"
+    action: |
+      Trace job IDs, queue names, retries, and worker isolation.
+      Identify cross-tenant execution and data bleed vectors.
+    tooling:
+      - "Queue system"
+      - "Worker services"
+      - "Job status APIs"
+      - "Webhook callbacks"
+    potential_impact:
+      - "Cross-tenant job execution"
+      - "Data bleed between jobs"
+      - "Job hijacking"
+    multipliers:
+      - "2x Complete POC"
+    status: "Open"
+    priority: "High"
+    notes: "Track job_id lifecycle end-to-end. Test job ID enumeration and manipulation."
+
+  # ---------------------------------------------------------------------------
+  # TIER 3: Forensic Recovery ($10k-$150k)
+  # ---------------------------------------------------------------------------
+
+  - asset: "Clip Generation Service"
+    system_area: "Video Editing"
+    phase: "Phase 5 - Forensic Analysis"
+    tier: "Tier 3: Forensic Recovery ($10k-$150k)"
+    directive: "Timeline & Clip Assembly"
+    action: |
+      Document how clips are cut, padded, templated, and previewed.
+      Identify cross-reference vulnerabilities between clips and source videos.
+    tooling:
+      - "POST /clips/generate"
+      - "Clip metadata APIs"
+      - "Timeline endpoints"
+      - "Preview generation"
+    potential_impact:
+      - "Unauthorized data inclusion"
+      - "Cross-tenant clip access"
+      - "Source video exposure"
+    multipliers:
+      - "2x Complete POC"
+    status: "Open"
+    priority: "Medium"
+    notes: "Track clip_id to parent video_id relationships. Test IDOR on clip access."
+
+  - asset: "Captioning & Styling Engine"
+    system_area: "Rendering Layer"
+    phase: "Phase 4 - Exploitation"
+    tier: "Tier 3: Forensic Recovery ($10k-$150k)"
+    directive: "Text & Asset Injection"
+    action: |
+      Analyze caption payloads, font paths, animations, and asset resolution.
+      Test for file inclusion and path traversal via styling parameters.
+    tooling:
+      - "Caption APIs"
+      - "Font/style parameters"
+      - "Animation configs"
+      - "Asset resolution"
+    potential_impact:
+      - "LFI"
+      - "Path traversal"
+      - "Sensitive file inclusion"
+      - "XSS via captions"
+    multipliers:
+      - "2x PII/Regulatory Impact"
+    status: "Open"
+    priority: "Medium"
+    notes: "Test font paths, SVGs, external refs. Check for SSRF via remote fonts."
+
+  # ---------------------------------------------------------------------------
+  # TIER 2: Vulnerabilities ($5k-$250k)
+  # ---------------------------------------------------------------------------
+
+  - asset: "Social Publishing OAuth"
+    system_area: "Integrations"
+    phase: "Phase 4 - Exploitation"
+    tier: "Tier 2: Vulnerabilities ($5k-$250k)"
+    directive: "OAuth & Token Handling"
+    action: |
+      Document OAuth scopes, token storage, publish flows, and account binding.
+      Test for token leakage and cross-account vulnerabilities.
+    tooling:
+      - "OAuth flows"
+      - "Social platform APIs"
+      - "Token endpoints"
+      - "Account linking"
+    potential_impact:
+      - "Cross-account posting"
+      - "Token replay"
+      - "Account takeover"
+    multipliers:
+      - "1.5x Scale Impact"
+    status: "Open"
+    priority: "Medium"
+    notes: "Verify user-to-token binding. Test state parameter handling."
+
+  - asset: "Logging, Monitoring & Analytics"
+    system_area: "Observability"
+    phase: "Phase 2 - Reconnaissance"
+    tier: "Tier 2: Vulnerabilities ($5k-$250k)"
+    directive: "Telemetry Leakage"
+    action: |
+      Identify exposed logs, metrics, debug endpoints.
+      Look for sensitive data in error messages and analytics.
+    tooling:
+      - "Logging/monitoring services"
+      - "Debug endpoints"
+      - "Error handlers"
+      - "Analytics APIs"
+    potential_impact:
+      - "Sensitive data exposure"
+      - "Internal path disclosure"
+      - "Credential leakage"
+    multipliers:
+      - "1.5x Novel Finding"
+    status: "Open"
+    priority: "Medium"
+    notes: "Look for debug flags and verbose errors. Check for stack traces in responses."
+
+# ============================================================================
+# OUT OF SCOPE - Do NOT Test
+# ============================================================================
+
+out_of_scope:
+  - "Denial of Service (DoS/DDoS) attacks"
+  - "Social engineering of employees or users"
+  - "Physical security testing"
+  - "Third-party services not owned by target"
+  - "Automated mass scanning without rate limiting"
+  - "Testing on production user accounts without permission"
+  - "Data destruction or modification"
+  - "Cryptocurrency/wallet attacks"
+
+# ============================================================================
+# RULES OF ENGAGEMENT
+# ============================================================================
+
+rules_of_engagement:
+  - "Authorization documented in: blackbox-ai/config/authorized_scope.yaml"
+  - "Operate within the defined scope (open scope with focus areas)"
+  - "No data destruction or unauthorized modification"
+  - "No service disruption or degradation"
+  - "Report critical findings within 24 hours"
+  - "Do not access data beyond proof of concept requirements"
+  - "Stop testing immediately if you encounter real user PII"
+  - "Use rate limiting on all automated requests"
+  - "Document all testing activities for audit trail"
+  - "Coordinate with program owners on high-impact tests"
+
+# ============================================================================
+# REWARD MULTIPLIERS REFERENCE
+# ============================================================================
+
+multipliers_reference:
+  - name: "System Compromise"
+    value: "3x"
+    criteria: "Full RCE, complete system takeover"
+
+  - name: "Root/Admin Access"
+    value: "3x"
+    criteria: "Administrative privilege escalation"
+
+  - name: "Complete E2E Map"
+    value: "2x"
+    criteria: "Full attack chain from entry to impact"
+
+  - name: "Complete POC"
+    value: "2x"
+    criteria: "Working proof of concept with clear impact"
+
+  - name: "PII/Regulatory Impact"
+    value: "2x"
+    criteria: "Access to personal data, GDPR/CCPA implications"
+
+  - name: "Regulatory Impact"
+    value: "2x"
+    criteria: "Compliance violations (SOC2, HIPAA, etc.)"
+
+  - name: "Novel Finding"
+    value: "1.5x"
+    criteria: "New vulnerability class or attack technique"
+
+  - name: "Scale Impact"
+    value: "1.5x"
+    criteria: "Affects >100k users or accounts"

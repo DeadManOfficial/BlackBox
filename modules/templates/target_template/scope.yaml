@@ -1,0 +1,81 @@
+# Target Scope Configuration
+# Copy this template to targets/{target}/scope.yaml
+
+target:
+  name: "Example Target"
+  program: "hackerone"  # hackerone, bugcrowd, private
+  program_url: "https://hackerone.com/example"
+
+# Authorization details
+authorization:
+  type: "bug_bounty"  # bug_bounty, pentest, internal
+  start_date: "2026-01-01"
+  end_date: "2026-12-31"
+  contact: "security@example.com"
+
+# In-scope assets
+in_scope:
+  domains:
+    - "*.example.com"
+    - "api.example.com"
+
+  applications:
+    - name: "Web Application"
+      url: "https://www.example.com"
+      type: "web"
+
+    - name: "Mobile API"
+      url: "https://api.example.com"
+      type: "api"
+
+  # Vulnerability types accepted
+  vulnerability_types:
+    - "xss"
+    - "sqli"
+    - "ssrf"
+    - "idor"
+    - "auth_bypass"
+    - "rce"
+
+# Out of scope - DO NOT TEST
+out_of_scope:
+  domains:
+    - "blog.example.com"
+    - "careers.example.com"
+
+  vulnerability_types:
+    - "dos"
+    - "spam"
+    - "social_engineering"
+
+  notes:
+    - "Do not test third-party integrations"
+    - "No testing of employee accounts"
+
+# Bounty structure
+bounties:
+  critical:
+    min: 10000
+    max: 50000
+  high:
+    min: 5000
+    max: 15000
+  medium:
+    min: 1000
+    max: 5000
+  low:
+    min: 100
+    max: 500
+
+# Testing constraints
+constraints:
+  rate_limiting: true
+  test_accounts_only: true
+  no_automated_scanning: false
+  report_all_findings: true
+
+# Notes
+notes: |
+  - Use test accounts created specifically for this engagement
+  - All testing must be non-destructive
+  - Report findings within 24 hours of discovery

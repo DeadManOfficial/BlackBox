@@ -1,0 +1,36 @@
+# Prometheus Configuration for BlackBox AI
+# ==========================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files: []
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # BlackBox API Server
+  - job_name: 'blackbox-api'
+    static_configs:
+      - targets: ['blackbox-api:8000']
+    metrics_path: '/metrics'
+
+  # BlackBox MCP Server
+  - job_name: 'blackbox-mcp'
+    static_configs:
+      - targets: ['blackbox-mcp:5000']
+    metrics_path: '/metrics'
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']

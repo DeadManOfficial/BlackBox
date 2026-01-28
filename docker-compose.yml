@@ -1,0 +1,45 @@
+# BlackBox v5.3 - Docker Compose
+# ===============================
+# Simple, clean deployment
+
+version: '3.8'
+
+services:
+  # Main CLI - Interactive shell
+  blackbox:
+    build: .
+    image: blackbox:5.3
+    container_name: blackbox
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./targets:/app/targets
+      - ./output:/app/output
+    environment:
+      - HACKERONE_API_KEY=${HACKERONE_API_KEY:-}
+    command: ["shell"]
+
+  # One-shot scan
+  scan:
+    build: .
+    image: blackbox:5.3
+    volumes:
+      - ./targets:/app/targets
+    environment:
+      - TARGET=${TARGET:-example.com}
+    profiles: ["scan"]
+    command: ["scan", "${TARGET:-example.com}"]
+
+  # Recon only
+  recon:
+    build: .
+    image: blackbox:5.3
+    volumes:
+      - ./targets:/app/targets
+    profiles: ["recon"]
+    command: ["recon", "${TARGET:-example.com}"]
+
+# Usage:
+#   docker-compose up blackbox          # Interactive shell
+#   TARGET=example.com docker-compose --profile scan up scan
+#   TARGET=example.com docker-compose --profile recon up recon

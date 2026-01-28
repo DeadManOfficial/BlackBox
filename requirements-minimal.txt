@@ -1,0 +1,21 @@
+# BlackBox v5.3 - Minimal Dependencies
+# =====================================
+# Core requirements for container/portable deployment
+
+# HTTP & Async
+requests>=2.31.0
+aiohttp>=3.9.0
+urllib3>=2.0.0
+
+# HTML/XML Parsing
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+
+# Data handling
+pyyaml>=6.0.0
+
+# CLI
+click>=8.1.0
+rich>=13.0.0
+
+# That's it. No bloat.

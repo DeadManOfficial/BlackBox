@@ -1,0 +1,256 @@
+# BlackBox AI - Module Configuration
+# ====================================
+# This file controls which modules are loaded and their settings.
+
+# Global settings
+global:
+  auto_discover: true
+  modules_path: "modules/"
+  enable_hot_reload: false
+  log_level: "INFO"
+
+# Module configurations
+modules:
+
+  # Reconnaissance module
+  reconnaissance:
+    enabled: true
+    description: "Target reconnaissance and OSINT"
+    tools:
+      subfinder:
+        timeout: 120
+        silent: true
+      httpx:
+        timeout: 60
+        threads: 50
+      amass:
+        timeout: 600
+        passive: true
+      katana:
+        timeout: 300
+        depth: 3
+
+  # Web attack module
+  web_attacks:
+    enabled: true
+    description: "Web application security testing"
+    tools:
+      sqlmap:
+        timeout: 600
+        level: 1
+        risk: 1
+      xsstrike:
+        timeout: 300
+      commix:
+        timeout: 300
+      arjun:
+        timeout: 120
+
+  # Cloud security module
+  cloud_security:
+    enabled: true
+    description: "Cloud infrastructure security assessment"
+    tools:
+      prowler:
+        provider: "aws"
+        profile: "default"
+      trivy:
+        scan_type: "image"
+        severity: "HIGH,CRITICAL"
+      kube_hunter:
+        active: false
+
+  # Dark web module
+  darkweb:
+    enabled: true
+    description: "Dark web and Tor network tools"
+    tor:
+      proxy_host: "127.0.0.1"
+      proxy_port: 9050
+      control_port: 9051
+    tools:
+      onionsearch:
+        engines: "ahmia,torch,darksearch"
+      torcrawl:
+        depth: 2
+
+  # AI security module
+  ai_security:
+    enabled: true
+    description: "AI/LLM security testing"
+    tools:
+      garak:
+        timeout: 600
+        model_type: "openai"
+      llm_redteam:
+        categories: "direct,indirect,encoding,jailbreak"
+
+  # Mobile security module
+  mobile:
+    enabled: true
+    description: "Mobile application security"
+    tools:
+      apktool:
+        timeout: 120
+      jadx:
+        timeout: 300
+      frida:
+        usb: true
+
+  # Payloads module
+  payloads:
+    enabled: true
+    description: "Payload generation and encoding"
+    tools:
+      msfvenom:
+        timeout: 60
+    paths:
+      seclists: "/home/deadman/BlackBox/external-tools/SecLists"
+      payloads_all: "/home/deadman/BlackBox/external-tools/PayloadsAllTheThings"
+
+  # CTF module
+  ctf:
+    enabled: true
+    description: "CTF competition tools"
+    tools:
+      steghide:
+        timeout: 30
+      exiftool:
+        timeout: 30
+
+  # Pentest module
+  pentest:
+    enabled: true
+    description: "Autonomous penetration testing engine"
+    safe_mode: true
+    max_workers: 10
+    rate_limit_rps: 10.0
+    phases:
+      - "P1"  # Recon
+      - "P2"  # Surface
+      - "P3"  # Auth
+      - "P4"  # Injection
+      - "P5"  # Logic
+      - "P6"  # Post
+
+  # Scraper module
+  scraper:
+    enabled: true
+    description: "Web scraping and data extraction"
+    tools:
+      playwright:
+        headless: true
+      scrapy:
+        timeout: 300
+    proxy_pool:
+      enabled: false
+      rotation: true
+
+  # Agents module
+  agents:
+    enabled: true
+    description: "Security agent prompts and orchestration"
+    prompts_path: "/home/deadman/BlackBox/agents"
+
+  # Adversary Emulation module (Atomic Red Team)
+  adversary_emulation:
+    enabled: true
+    description: "MITRE ATT&CK adversary emulation and detection validation"
+    atomic_red_team:
+      cache_dir: "~/.blackbox/atomic-red-team"
+      auto_refresh: true
+    detection_frameworks:
+      - sigma
+      - splunk
+      - elastic
+    high_value_techniques:
+      - T1003  # Credential Dumping
+      - T1055  # Process Injection
+      - T1059  # Command and Scripting
+      - T1486  # Ransomware
+
+  # Signature Analysis module
+  signatures:
+    enabled: true
+    description: "Request signing and anti-bot analysis"
+    vm_tracing:
+      max_opcodes: 10000
+      timeout: 60
+    crypto_constants:
+      - xxtea
+      - aes
+      - md5
+      - sha256
+      - tea_delta
+
+  # Certificate Transparency (recon enhancement)
+  cert_transparency:
+    enabled: true
+    description: "SSL certificate transparency subdomain enumeration"
+    crt_sh:
+      rate_limit: 1.0
+      timeout: 30
+      include_expired: false
+
+  # HackerOne Integration
+  hackerone:
+    enabled: true
+    description: "HackerOne API integration for bounty automation"
+    api_base: "https://api.hackerone.com/v1"
+    features:
+      - list_programs
+      - submit_reports
+      - track_bounties
+      - learn_from_disclosures
+
+  # OAuth Security Testing
+  oauth:
+    enabled: true
+    description: "OAuth 2.0 security assessment framework"
+    tests:
+      - redirect_uri_bypass
+      - pkce_downgrade
+      - state_manipulation
+      - scope_escalation
+      - token_leakage
+
+  # Bug Bounty module
+  bugbounty:
+    enabled: true
+    description: "Bug bounty target and project management"
+    projects_path: "/home/deadman/BlackBox/projects"
+    platforms:
+      - hackerone
+      - bugcrowd
+      - intigriti
+      - synack
+      - direct
+    severity_levels:
+      - critical
+      - high
+      - medium
+      - low
+      - info
+
+  # Reporting module
+  reporting:
+    enabled: true
+    description: "Security assessment report generation"
+    templates_path: "/home/deadman/BlackBox/templates/reports"
+    output_path: "/home/deadman/BlackBox/reports"
+    formats:
+      - markdown
+      - html
+      - json
+      - pdf
+    default_format: "markdown"
+
+# External tools path
+external_tools:
+  base_path: "/home/deadman/BlackBox/external-tools"
+  auto_wrap: true
+
+# Dashboard (mission control UI)
+dashboard:
+  path: "/home/deadman/BlackBox/dashboard"
+  enabled: false  # Enable when needed

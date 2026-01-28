@@ -1,0 +1,397 @@
+# DEBUG_RULES.md Workflow
+# DEADMAN Debugging Methodology
+# 9 Phases, 22 Rules + NASA-Inspired Data Standards
+
+name: debug_methodology
+version: "2.0"
+description: "Absolute debugging ruleset with NASA PDS4-inspired data standards integration"
+
+# =============================================================================
+# NASA-INSPIRED DATA STANDARDS INTEGRATION
+# =============================================================================
+# Every debug session automatically applies:
+# - Logical Identifiers (LID) for all artifacts
+# - Processing Levels (L0-L4) for maturity tracking
+# - Checksums for integrity verification
+# - Provenance tracking with audit trails
+# - Standardized labels for all evidence and fixes
+#
+# Usage:
+#   from workflows.debug_standards_enforcement import StandardizedDebugger
+#   debugger = StandardizedDebugger.start(name="...", failure_type="crash", ...)
+# =============================================================================
+
+data_standards:
+  version: "1.0.0"
+  reference: "standards/DATA_STANDARDS.md"
+
+  # Standards automatically enforced
+  auto_enforced:
+    - id: "STD-R0"
+      rule: "Session LID Required"
+      description: "Every debug session gets a unique LID"
+
+    - id: "STD-R4"
+      rule: "Golden State Checksum"
+      maps_to: "R4_golden_state"
+      description: "State snapshots have SHA-256 integrity verification"
+
+    - id: "STD-R8"
+      rule: "Hypothesis Tracking"
+      maps_to: "R8_multiple_hypotheses"
+      description: "Hypotheses tracked with LIDs and processing levels"
+
+    - id: "STD-R13"
+      rule: "Evidence Chain"
+      maps_to: "R13_golden_reference"
+      description: "All evidence has hashes and provenance tracking"
+
+    - id: "STD-R16"
+      rule: "Fix Compliance"
+      maps_to: "R16_minimal_reversible"
+      description: "Fixes documented with R16 compliance fields"
+
+    - id: "STD-R21"
+      rule: "Documentation Labels"
+      maps_to: "R21_documentation"
+      description: "Final docs have standardized labels and LIDs"
+
+  # Processing levels for debug artifacts
+  processing_levels:
+    L0: "Raw - Initial capture, unvalidated"
+    L1: "Validated - Checksums verified, schema valid"
+    L2: "Enriched - Correlated with other evidence"
+    L3: "Analyzed - Expert reviewed, hypotheses tested"
+    L4: "Actionable - Root cause confirmed, fix verified"
+
+# Global Invariants (ALWAYS TRUE)
+invariants:
+  - "Evidence > opinion"
+  - "Reproducibility > speed"
+  - "System > symptom"
+  - "Spec > implementation"
+  - "Correctness > performance"
+  - "Minimal change > broad change"
+  - "Lowest Responsible Layer > masking"
+  - "Documentation is part of the fix"
+
+# Absolute Stop Conditions
+stop_conditions:
+  - "reproduction is lost"
+  - "evidence contradicts hypothesis"
+  - "telemetry is missing"
+  - "spec interpretation unclear"
+  - "fix hides a lower-layer defect"
+  - "rollback is impossible"
+
+# One-Line Law
+law: "IF it is not reproducible, observable, spec-compliant, minimally fixed, independently verified, and institutionalized — THEN it is not done."
+
+phases:
+
+  # ============================================
+  # PHASE 1: FAILURE DETECTION & CLASSIFICATION
+  # ============================================
+  phase_1_detection:
+    name: "Failure Detection & Classification"
+    rules:
+
+      R0_authorization:
+        name: "Authorization"
+        source: "DEADMAN"
+        condition: "debugging or reverse engineering begins"
+        action: "scope, authorization, and asset ownership MUST be documented"
+        stop_on_fail: true
+        checklist:
+          - "Target identified"
+          - "Scope documented"
+          - "Authorization obtained"
+          - "Asset ownership verified"
+
+      R1_failure_definition:
+        name: "Failure Definition"
+        source: "DEADMAN"
+        condition: "issue is reported"
+        action: "define failure as observable, measurable condition AND define success criteria"
+        stop_on_fail: true
+        checklist:
+          - "Failure is observable"
+          - "Failure is measurable"
+          - "Success criteria defined"
+
+      R2_system_boundary:
+        name: "System Boundary"
+        source: "DEADMAN"
+        condition: "failure exists"
+        action: "define system boundaries (inputs -> transforms -> outputs) AND list all dependencies"
+        stop_on_fail: true
+        checklist:
+          - "Inputs identified"
+          - "Transforms documented"
+          - "Outputs defined"
+          - "Dependencies listed"
+
+      R3_failure_type:
+        name: "Failure Type Classification"
+        source: "DEADMAN"
+        condition: "failure is observed"
+        action: "classify exactly ONE primary type"
+        stop_on_fail: true
+        types:
+          - crash
+          - incorrect_output
+          - performance_regression
+          - hang_deadlock
+        note: "IF classification unclear THEN add instrumentation"
+
+  # ============================================
+  # PHASE 2: STATE FREEZE & TELEMETRY
+  # ============================================
+  phase_2_state:
+    name: "State Freeze & Telemetry"
+    rules:
+
+      R4_golden_state:
+        name: "Golden State Capture"
+        source: "DEADMAN"
+        condition: "debugging begins"
+        action: "capture Golden State"
+        stop_on_fail: true
+        required_fields:
+          - inputs
+          - configs
+          - versions
+          - environment
+          - timestamp
+
+      R5_telemetry_validation:
+        name: "Telemetry Validation"
+        source: "DEADMAN"
+        condition: "telemetry/logs are used"
+        action: "validate timestamps and alignment AND require >=2 independent signals per symptom"
+        stop_on_fail: false
+        note: "IF signals conflict THEN debug telemetry, NOT the system"
+
+  # ============================================
+  # PHASE 3: REPRODUCTION
+  # ============================================
+  phase_3_reproduction:
+    name: "Reproduction"
+    rules:
+
+      R6_deterministic_repro:
+        name: "Deterministic Reproduction"
+        source: "DEADMAN"
+        condition: "fix is proposed"
+        action: "deterministic repro MUST exist"
+        stop_on_fail: true
+        note: "IF repro does not exist THEN add instrumentation AND STOP"
+
+      R7_minimal_failing_unit:
+        name: "Minimal Failing Unit"
+        source: "DEADMAN"
+        condition: "repro exists"
+        action: "reduce to smallest failing unit"
+        stop_on_fail: false
+        reduce_to:
+          - minimal function
+          - minimal kernel
+          - minimal state
+        note: "IF reduction removes failure THEN reduction is invalid -> restore scope"
+
+  # ============================================
+  # PHASE 4: HYPOTHESES & FAULT ISOLATION
+  # ============================================
+  phase_4_hypothesis:
+    name: "Hypotheses & Fault Isolation"
+    rules:
+
+      R8_multiple_hypotheses:
+        name: "Multiple Hypotheses"
+        source: "DEADMAN"
+        condition: "root cause is unknown"
+        action: "generate >=3 competing hypotheses"
+        stop_on_fail: true
+        minimum: 3
+
+      R9_falsification_only:
+        name: "Falsification Only"
+        source: "DEADMAN"
+        condition: "test is run"
+        action: "purpose MUST be to falsify a hypothesis"
+        stop_on_fail: false
+        note: "IF test 'confirms' without falsifying alternatives THEN test is invalid"
+
+      R10_layer_isolation:
+        name: "Layer Isolation"
+        source: "DEADMAN"
+        condition: "failure persists"
+        action: "isolate by layer"
+        stop_on_fail: true
+        layers:
+          - hardware
+          - firmware
+          - driver
+          - runtime
+          - framework
+          - application
+
+      R11_memory_first:
+        name: "Memory First"
+        source: "DEADMAN"
+        condition: "results are 'almost correct' OR nondeterministic"
+        action: "assume memory/coherency/ordering bug UNTIL proven otherwise"
+        stop_on_fail: false
+
+      R12_spec_check:
+        name: "Spec Check"
+        source: "DEADMAN"
+        condition: "behavior contradicts spec"
+        action: "code is wrong, NOT hardware, NOT runtime"
+        stop_on_fail: true
+        note: "IF behavior is undefined by spec THEN developer error -> STOP"
+
+  # ============================================
+  # PHASE 5: VALIDATION & COMPARISON
+  # ============================================
+  phase_5_validation:
+    name: "Validation & Comparison"
+    rules:
+
+      R13_golden_reference:
+        name: "Golden Reference"
+        source: "DEADMAN"
+        condition: "outputs exist"
+        action: "compare against golden reference"
+        stop_on_fail: true
+        reference_types:
+          - CPU reference
+          - previous known-good version
+          - spec-defined output
+        note: "IF no golden reference exists THEN create one OR STOP"
+
+      R14_fleet_patterns:
+        name: "Fleet Patterns"
+        source: "DEADMAN"
+        condition: "issue affects multiple instances"
+        action: "analyze patterns across population"
+        stop_on_fail: false
+        note: "IF issue explains only a single case THEN it is NOT root cause"
+
+  # ============================================
+  # PHASE 6: FIX DESIGN
+  # ============================================
+  phase_6_fix:
+    name: "Fix Design"
+    rules:
+
+      R15_lowest_responsible_layer:
+        name: "Lowest Responsible Layer"
+        source: "DEADMAN"
+        condition: "contract is violated"
+        action: "fix at the lowest responsible layer"
+        stop_on_fail: true
+        note: "IF fix masks a lower-layer defect THEN fix is REJECTED"
+
+      R16_minimal_reversible:
+        name: "Minimal & Reversible"
+        source: "DEADMAN"
+        condition: "fix is written"
+        action: "fix MUST be minimal, scoped, reversible"
+        stop_on_fail: true
+        requirements:
+          - minimal
+          - scoped
+          - reversible
+          - rollback_plan_exists
+
+      R17_shadow_mode:
+        name: "Shadow Mode"
+        source: "DEADMAN"
+        condition: "behavior can be observed without control"
+        action: "deploy fix in shadow mode first"
+        stop_on_fail: false
+        note: "IF shadow results regress THEN STOP"
+
+  # ============================================
+  # PHASE 7: DEPLOYMENT
+  # ============================================
+  phase_7_deployment:
+    name: "Deployment"
+    rules:
+
+      R18_canary_only:
+        name: "Canary Deployment"
+        source: "DEADMAN"
+        condition: "fix is deployed"
+        action: "deploy to smallest cohort first"
+        stop_on_fail: false
+        note: "IF anomalies occur THEN rollback immediately"
+
+      R19_performance_safety:
+        name: "Performance Safety"
+        source: "DEADMAN"
+        condition: "fix impacts performance"
+        action: "correctness MUST already be proven"
+        stop_on_fail: false
+        note: "IF performance regression exists THEN mitigation plan required"
+
+  # ============================================
+  # PHASE 8: INDEPENDENT VALIDATION
+  # ============================================
+  phase_8_review:
+    name: "Independent Validation"
+    rules:
+
+      R20_tiger_team:
+        name: "Tiger Team Review"
+        source: "DEADMAN"
+        condition: "fix is ready to close"
+        action: "independent reviewer MUST validate"
+        stop_on_fail: true
+        validate:
+          - evidence
+          - repro
+          - hypothesis
+          - fix_logic
+        note: "IF reviewer disagrees THEN resolve with data OR STOP"
+
+  # ============================================
+  # PHASE 9: CLOSURE & MEMORY
+  # ============================================
+  phase_9_closure:
+    name: "Closure & Memory"
+    rules:
+
+      R21_documentation:
+        name: "Documentation"
+        source: "DEADMAN"
+        condition: "fix is merged"
+        action: "documentation MUST include"
+        stop_on_fail: false
+        required:
+          - timeline
+          - root_cause
+          - evidence
+          - prevention
+        note: "IF documentation missing THEN fix is incomplete"
+
+      R22_regression_prevention:
+        name: "Regression Prevention"
+        source: "DEADMAN"
+        condition: "bug is fixed"
+        action: "add regression test"
+        stop_on_fail: false
+        note: "IF same class reappears THEN process failure declared"
+
+# Execution order
+execution_order:
+  - phase_1_detection
+  - phase_2_state
+  - phase_3_reproduction
+  - phase_4_hypothesis
+  - phase_5_validation
+  - phase_6_fix
+  - phase_7_deployment
+  - phase_8_review
+  - phase_9_closure

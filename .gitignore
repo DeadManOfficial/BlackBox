@@ -1,0 +1,80 @@
+# BlackBox v5.3 - Git Ignore
+# ===========================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+coverage.xml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-*
+
+# Secrets - CRITICAL
+.env
+.env.*
+*.env
+secrets/
+credentials/
+*.pem
+*.key
+*.crt
+
+# Project data - user specific
+targets/
+output/
+reports/
+data/
+logs/
+sessions/
+*.log
+
+# Scan artifacts
+*.nmap
+*.xml
+subdomains.txt
+alive.txt
+nuclei.txt
+ffuf.json
+gobuster.txt
+
+# Temp
+tmp/
+temp/
+*.tmp
+*.bak
+*.old
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Nuclei cache
+.nuclei-templates/
+
+# Auth state
+.auth_state
